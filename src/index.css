@@ -7,31 +7,235 @@
   padding: 0;
 }
 
-/* ── Design tokens ─────────────────────────────────────── */
+/* ── Default Theme tokens ───────────────────────────────── */
 :root {
-  /* Neutral palette – warm grays */
-  --c-bg: #F7F7F8;
+  --c-bg: #F2F2F7;
   --c-surface: #FFFFFF;
   --c-border: rgba(0, 0, 0, 0.07);
   --c-text: #1A1A2E;
   --c-text-2: #6B7280;
   --c-text-3: #9CA3AF;
-
-  /* Accent colors – muted, sophisticated */
   --c-blue: #3B82F6;
   --c-green: #10B981;
   --c-amber: #F59E0B;
   --c-red: #EF4444;
   --c-purple: #8B5CF6;
-
-  /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
-
-  /* Radius */
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 16px;
+  --nav-bg: rgba(247, 247, 248, 0.92);
+  --tab-bg: rgba(255, 255, 255, 0.95);
+  --body-bg-image: none;
+}
+
+/* ══ DARK THEME ════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --c-bg: #0F172A;
+  --c-surface: #1E293B;
+  --c-border: rgba(255, 255, 255, 0.08);
+  --c-text: #F1F5F9;
+  --c-text-2: #94A3B8;
+  --c-text-3: #64748B;
+  --c-blue: #818CF8;
+  --c-green: #34D399;
+  --c-amber: #FCD34D;
+  --c-red: #F87171;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --nav-bg: rgba(15, 23, 42, 0.95);
+  --tab-bg: rgba(30, 41, 59, 0.97);
+}
+
+[data-theme="dark"] .adm-nav-bar {
+  background: var(--nav-bg) !important;
+  border-bottom: 1px solid var(--c-border) !important;
+}
+
+[data-theme="dark"] .adm-tab-bar {
+  background: var(--tab-bg) !important;
+  border-top: 1px solid var(--c-border) !important;
+}
+
+[data-theme="dark"] .adm-form-item,
+[data-theme="dark"] .adm-list-item {
+  background: var(--c-surface) !important;
+}
+
+[data-theme="dark"] .adm-input-element,
+[data-theme="dark"] .adm-form-item-label,
+[data-theme="dark"] .adm-nav-bar-title,
+[data-theme="dark"] .adm-nav-bar-back {
+  color: var(--c-text) !important;
+}
+
+[data-theme="dark"] .adm-tabs-header {
+  background: var(--c-surface) !important;
+  border-bottom: 1px solid var(--c-border) !important;
+}
+
+[data-theme="dark"] .adm-popup-body {
+  background: var(--c-surface) !important;
+}
+
+[data-theme="dark"] .adm-selector-item {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--c-text-2) !important;
+  border: 1px solid var(--c-border) !important;
+}
+
+[data-theme="dark"] .adm-selector-item-active {
+  background: rgba(129, 140, 248, 0.2) !important;
+  color: #818CF8 !important;
+  border-color: #818CF8 !important;
+}
+
+/* ══ GLASS THEME ═══════════════════════════════════════════ */
+:root {
+  --glass-opacity: 0.2;
+}
+
+[data-theme="glass"] {
+  --c-bg: transparent;
+  --c-surface: rgba(255, 255, 255, var(--glass-opacity));
+  --c-border: rgba(255, 255, 255, calc(var(--glass-opacity) + 0.1));
+  --c-text: #1A1A2E;
+  --c-text-2: rgba(30, 30, 60, 0.7);
+  --c-text-3: rgba(30, 30, 60, 0.5);
+  --c-blue: #5B5FFF;
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --nav-bg: rgba(255, 255, 255, calc(var(--glass-opacity) + 0.1));
+  --tab-bg: rgba(255, 255, 255, calc(var(--glass-opacity) + 0.1));
+  --body-bg-image: linear-gradient(135deg, #a8edea 0%, #fed6e3 50%, #d4b5f7 100%);
+}
+
+[data-theme="glass"] body,
+[data-theme="glass"] #root {
+  background-image: var(--body-bg-image) !important;
+  background-size: var(--body-bg-size, cover) !important;
+  background-position: var(--body-bg-pos, center) !important;
+  background-attachment: fixed !important;
+  min-height: 100vh;
+}
+
+[data-theme="glass"] .adm-nav-bar {
+  background: rgba(255, 255, 255, calc(var(--glass-opacity) + 0.1)) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, calc(var(--glass-opacity) + 0.15)) !important;
+}
+
+[data-theme="glass"] .adm-tab-bar {
+  background: rgba(255, 255, 255, calc(var(--glass-opacity) + 0.1)) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border-top: 1px solid rgba(255, 255, 255, calc(var(--glass-opacity) + 0.15)) !important;
+}
+
+[data-theme="glass"] .adm-popup-body {
+  background: rgba(255, 255, 255, calc(var(--glass-opacity) + 0.6)) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+[data-theme="glass"] .adm-form-item {
+  background: rgba(255, 255, 255, calc(var(--glass-opacity) + 0.25)) !important;
+}
+
+
+/* ══ MINT THEME ════════════════════════════════════════════ */
+[data-theme="mint"] {
+  --c-bg: #ECFDF5;
+  --c-surface: #FFFFFF;
+  --c-border: rgba(16, 185, 129, 0.12);
+  --c-text: #064E3B;
+  --c-text-2: #065F46;
+  --c-text-3: #6EE7B7;
+  --c-blue: #059669;
+  --c-green: #10B981;
+  --shadow-sm: 0 1px 3px rgba(16, 185, 129, 0.1);
+  --shadow-md: 0 4px 12px rgba(16, 185, 129, 0.15);
+  --nav-bg: rgba(236, 253, 245, 0.95);
+  --tab-bg: rgba(236, 253, 245, 0.97);
+}
+
+[data-theme="mint"] .adm-nav-bar {
+  background: var(--nav-bg) !important;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.15) !important;
+}
+
+[data-theme="mint"] .adm-tab-bar {
+  background: var(--tab-bg) !important;
+  border-top: 1px solid rgba(16, 185, 129, 0.15) !important;
+}
+
+[data-theme="mint"] .adm-tab-bar-item-active .adm-tab-bar-item-title,
+[data-theme="mint"] .adm-tab-bar-item-active .adm-tab-bar-item-icon {
+  color: #10B981 !important;
+}
+
+/* ══ NIGHT PURPLE THEME ════════════════════════════════════ */
+[data-theme="night"] {
+  --c-bg: #13111C;
+  --c-surface: #1D1933;
+  --c-border: rgba(139, 92, 246, 0.15);
+  --c-text: #EDE9FE;
+  --c-text-2: #C4B5FD;
+  --c-text-3: #7C3AED;
+  --c-blue: #A78BFA;
+  --c-green: #34D399;
+  --c-amber: #FCD34D;
+  --c-red: #F87171;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(139, 92, 246, 0.2);
+  --nav-bg: rgba(19, 17, 28, 0.97);
+  --tab-bg: rgba(29, 25, 51, 0.98);
+}
+
+[data-theme="night"] .adm-nav-bar {
+  background: var(--nav-bg) !important;
+  border-bottom: 1px solid var(--c-border) !important;
+}
+
+[data-theme="night"] .adm-tab-bar {
+  background: var(--tab-bg) !important;
+  border-top: 1px solid var(--c-border) !important;
+}
+
+[data-theme="night"] .adm-nav-bar-title,
+[data-theme="night"] .adm-nav-bar-back,
+[data-theme="night"] .adm-input-element {
+  color: var(--c-text) !important;
+}
+
+[data-theme="night"] .adm-tab-bar-item-active .adm-tab-bar-item-title,
+[data-theme="night"] .adm-tab-bar-item-active .adm-tab-bar-item-icon {
+  color: #A78BFA !important;
+}
+
+[data-theme="night"] .adm-popup-body {
+  background: var(--c-surface) !important;
+}
+
+[data-theme="night"] .adm-form-item {
+  background: var(--c-surface) !important;
+}
+
+[data-theme="night"] .adm-input-element,
+[data-theme="night"] .adm-form-item-label {
+  color: var(--c-text) !important;
+}
+
+[data-theme="night"] .adm-selector-item {
+  background: rgba(139, 92, 246, 0.08) !important;
+  color: var(--c-text-2) !important;
+  border: 1px solid var(--c-border) !important;
+}
+
+[data-theme="night"] .adm-tabs-header {
+  background: var(--c-surface) !important;
+  border-bottom: 1px solid var(--c-border) !important;
 }
 
 html {
@@ -46,6 +250,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior: none;
+  transition: background 0.3s ease, color 0.2s ease;
 }
 
 #root {
@@ -53,11 +258,10 @@ body {
   margin: 0 auto;
   min-height: 100vh;
   background: var(--c-bg);
+  transition: background 0.3s ease;
 }
 
 /* ── antd-mobile overrides ──────────────────────────────── */
-
-/* Force font everywhere */
 .adm-tab-bar,
 .adm-nav-bar,
 .adm-button,
@@ -72,7 +276,7 @@ body {
 
 /* NavBar */
 .adm-nav-bar {
-  background: rgba(247, 247, 248, 0.92) !important;
+  background: var(--nav-bg) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--c-border) !important;
@@ -80,6 +284,7 @@ body {
   top: 0;
   z-index: 100;
   --height: 48px;
+  transition: background 0.3s ease;
 }
 
 .adm-nav-bar-title {
@@ -100,12 +305,13 @@ body {
   transform: translateX(-50%);
   width: 100%;
   max-width: 480px;
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: var(--tab-bg) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--c-border) !important;
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom, 0);
+  transition: background 0.3s ease;
 }
 
 .adm-tab-bar-item-title {
@@ -142,7 +348,7 @@ body {
 
 .adm-tabs-header {
   border-bottom: 1px solid var(--c-border) !important;
-  background: #fff;
+  background: var(--c-surface);
 }
 
 /* Button */

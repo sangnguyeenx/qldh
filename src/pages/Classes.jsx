@@ -6,15 +6,15 @@ import { fmt } from '../utils'
 const LEVELS = ['Lớp 1', 'Lớp 2', 'Lớp 3', 'Lớp 4', 'Lớp 5', 'Lớp 6', 'Lớp 7', 'Lớp 8', 'Lớp 9']
 
 const LEVEL_STYLE = {
-    'Lớp 1': { color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
-    'Lớp 2': { color: '#34D399', bg: 'rgba(52,211,153,0.1)' },
-    'Lớp 3': { color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
-    'Lớp 4': { color: '#60A5FA', bg: 'rgba(96,165,250,0.1)' },
-    'Lớp 5': { color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
-    'Lớp 6': { color: '#FB923C', bg: 'rgba(251,146,60,0.1)' },
-    'Lớp 7': { color: '#EF4444', bg: 'rgba(239,68,68,0.1)' },
-    'Lớp 8': { color: '#EC4899', bg: 'rgba(236,72,153,0.1)' },
-    'Lớp 9': { color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)' },
+    'Lớp 1': { color: '#10B981', bg: 'rgba(16,185,129,0.12)' },
+    'Lớp 2': { color: '#34D399', bg: 'rgba(52,211,153,0.12)' },
+    'Lớp 3': { color: '#3B82F6', bg: 'rgba(59,130,246,0.12)' },
+    'Lớp 4': { color: '#60A5FA', bg: 'rgba(96,165,250,0.12)' },
+    'Lớp 5': { color: '#F59E0B', bg: 'rgba(245,158,11,0.12)' },
+    'Lớp 6': { color: '#FB923C', bg: 'rgba(251,146,60,0.12)' },
+    'Lớp 7': { color: '#EF4444', bg: 'rgba(239,68,68,0.12)' },
+    'Lớp 8': { color: '#EC4899', bg: 'rgba(236,72,153,0.12)' },
+    'Lớp 9': { color: '#8B5CF6', bg: 'rgba(139,92,246,0.12)' },
 }
 
 function ClassForm({ cls, onSave, onClose }) {
@@ -26,16 +26,16 @@ function ClassForm({ cls, onSave, onClose }) {
         <div style={{ paddingBottom: 40 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px 12px' }}>
                 <Button fill="none" color="danger" onClick={onClose} style={{ padding: '0', fontWeight: 600 }}>Hủy</Button>
-                <span style={{ fontWeight: 700, fontSize: '17px', color: '#1A1A2E' }}>{cls ? 'Sửa Lớp Học' : 'Thêm Lớp Học'}</span>
+                <span style={{ fontWeight: 700, fontSize: '17px', color: 'var(--c-text)' }}>{cls ? 'Sửa Lớp Học' : 'Thêm Lớp Học'}</span>
                 <Button fill="none" color="primary" onClick={() => form.submit()} style={{ padding: '0', fontWeight: 700 }}>Lưu</Button>
             </div>
-            <div style={{ height: '0.5px', background: 'rgba(0,0,0,0.08)', marginBottom: '4px' }} />
+            <div style={{ height: '0.5px', background: 'var(--c-border)', marginBottom: '4px' }} />
             <Form
                 form={form}
                 initialValues={cls || { name: '', level: 'Lớp 1', schedule: '', monthlyFee: '', room: '', status: 'active' }}
                 onFinish={handleFinish}
                 layout="vertical"
-                style={{ '--border-inner': '0.5px solid rgba(0,0,0,0.07)', '--border-top': 'none', '--border-bottom': 'none' }}
+                style={{ '--border-inner': '0.5px solid var(--c-border)', '--border-top': 'none', '--border-bottom': 'none' }}
             >
                 <Form.Item name="name" label="Tên lớp" rules={[{ required: true, message: 'Nhập tên lớp' }]}>
                     <Input placeholder="VD: Lớp Beginner A" />
@@ -94,7 +94,7 @@ export default function Classes({ store, navigate }) {
                     placeholder="Tìm tên lớp..."
                     value={search}
                     onChange={setSearch}
-                    style={{ '--border-radius': '12px', '--background': '#fff', '--border-inner': 'none' }}
+                    style={{ '--border-radius': '12px', '--background': 'var(--c-surface)', '--border-inner': 'none' }}
                 />
             </div>
 
@@ -106,9 +106,9 @@ export default function Classes({ store, navigate }) {
                         onClick={() => setFilter(v)}
                         style={{
                             padding: '6px 14px', borderRadius: '100px',
-                            border: filter === v ? 'none' : '1px solid rgba(0,0,0,0.12)',
-                            background: filter === v ? '#3B82F6' : '#fff',
-                            color: filter === v ? '#fff' : '#6B7280',
+                            border: filter === v ? 'none' : '1px solid var(--c-border)',
+                            background: filter === v ? 'var(--c-blue)' : 'var(--c-surface)',
+                            color: filter === v ? '#fff' : 'var(--c-text-2)',
                             fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
                             transition: 'all 0.15s',
                         }}
@@ -120,7 +120,7 @@ export default function Classes({ store, navigate }) {
                     style={{
                         display: 'flex', alignItems: 'center', gap: '4px',
                         padding: '7px 14px', borderRadius: '100px', border: 'none',
-                        background: '#3B82F6', color: '#fff',
+                        background: 'var(--c-blue)', color: '#fff',
                         fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
                         boxShadow: '0 2px 8px rgba(59,130,246,0.3)',
                     }}
@@ -135,7 +135,7 @@ export default function Classes({ store, navigate }) {
             </div>
 
             {/* Class list */}
-            <div style={{ margin: '0 16px', background: '#fff', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.06)', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+            <div style={{ margin: '0 16px', background: 'var(--c-surface)', borderRadius: '14px', border: '1px solid var(--c-border)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
                 {filtered.map((cls, idx) => {
                     const active = getStudentsByClass(cls.id).filter(s => s.status === 'active').length
                     const ls = LEVEL_STYLE[cls.level] || LEVEL_STYLE['Lớp 1']
@@ -145,14 +145,14 @@ export default function Classes({ store, navigate }) {
                             onClick={() => navigate('class-detail', { classId: cls.id })}
                             style={{
                                 padding: '14px 16px',
-                                borderBottom: idx < filtered.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none',
+                                borderBottom: idx < filtered.length - 1 ? '1px solid var(--c-border)' : 'none',
                                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '13px',
                                 opacity: cls.status === 'closed' ? 0.55 : 1,
                                 transition: 'background 0.12s',
                             }}
-                            onMouseEnter={e => e.currentTarget.style.background = '#FAFAFA'}
+                            onMouseEnter={e => e.currentTarget.style.background = 'var(--c-bg)'}
                             onMouseLeave={e => e.currentTarget.style.background = ''}
-                            onTouchStart={e => e.currentTarget.style.background = '#F5F5F7'}
+                            onTouchStart={e => e.currentTarget.style.background = 'var(--c-bg)'}
                             onTouchEnd={e => e.currentTarget.style.background = ''}
                         >
                             {/* Avatar */}
@@ -167,12 +167,12 @@ export default function Classes({ store, navigate }) {
 
                             {/* Info */}
                             <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 700, fontSize: '15px', color: '#1A1A2E', marginBottom: '3px' }}>{cls.name}</div>
-                                <div style={{ fontSize: '12px', color: '#9CA3AF', fontWeight: 400, marginBottom: '4px' }}>
+                                <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--c-text)', marginBottom: '3px' }}>{cls.name}</div>
+                                <div style={{ fontSize: '12px', color: 'var(--c-text-3)', fontWeight: 400, marginBottom: '4px' }}>
                                     {active} học sinh · {fmt(cls.monthlyFee)}/buổi
                                     {cls.schedule && ` · ${cls.schedule}`}
                                 </div>
-                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: `${ls.bg}`, borderRadius: '6px', padding: '2px 8px' }}>
+                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: ls.bg, borderRadius: '6px', padding: '2px 8px' }}>
                                     <span style={{ fontSize: '11px', fontWeight: 700, color: ls.color }}>{cls.level}</span>
                                 </div>
                             </div>
@@ -182,20 +182,20 @@ export default function Classes({ store, navigate }) {
                                 <button
                                     onClick={() => { setEditing(cls); setPopup(true) }}
                                     style={{
-                                        padding: '5px 10px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)',
-                                        background: '#F9FAFB', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                                        color: '#6B7280', fontFamily: 'inherit',
+                                        padding: '5px 10px', borderRadius: '8px', border: '1px solid var(--c-border)',
+                                        background: 'var(--c-bg)', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                                        color: 'var(--c-text-2)', fontFamily: 'inherit',
                                     }}
                                 >Sửa</button>
                                 <button
                                     onClick={() => handleDelete(cls)}
                                     style={{
                                         padding: '5px 10px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.2)',
-                                        background: 'rgba(239,68,68,0.05)', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                                        background: 'rgba(239,68,68,0.08)', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
                                         color: '#EF4444', fontFamily: 'inherit',
                                     }}
                                 >Xóa</button>
-                                <RightOutline style={{ color: '#D1D5DB', fontSize: '13px' }} />
+                                <RightOutline style={{ color: 'var(--c-text-3)', fontSize: '13px' }} />
                             </div>
                         </div>
                     )
@@ -203,8 +203,8 @@ export default function Classes({ store, navigate }) {
                 {filtered.length === 0 && (
                     <div style={{ padding: '40px 20px', textAlign: 'center' }}>
                         <div style={{ fontSize: '32px', marginBottom: '10px' }}>📚</div>
-                        <div style={{ fontWeight: 700, fontSize: '15px', color: '#1A1A2E', marginBottom: '4px' }}>Chưa có lớp học</div>
-                        <div style={{ fontSize: '13px', color: '#9CA3AF' }}>Nhấn "Thêm lớp" để bắt đầu</div>
+                        <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--c-text)', marginBottom: '4px' }}>Chưa có lớp học</div>
+                        <div style={{ fontSize: '13px', color: 'var(--c-text-3)' }}>Nhấn "Thêm lớp" để bắt đầu</div>
                     </div>
                 )}
             </div>
