@@ -153,13 +153,17 @@ export default function Settings({ onThemeChange }) {
         return saved
     })
     const [googleUser, setGoogleUser] = useState(null)
-    const [syncing, setSyncing] = useState(false)
-    const [syncStatus, setSyncStatus] = useState(null)
 
     useEffect(() => {
         const unsub = onAuthChange(user => setGoogleUser(user))
         return unsub
     }, [])
+
+    // Auto-save settings lên Firestore khi thay đổi
+    useEffect(() => {
+        if (!googleUser) return
+        saveUserSettings(googleUser.uid, { theme: themeKey, glassOpacity }).catch(() => { })
+    }, [themeKey, glassOpacity, googleUser])
 
     const currentTheme = THEMES.find(t => t.key === themeKey) || THEMES[0]
 
@@ -514,52 +518,16 @@ export default function Settings({ onThemeChange }) {
                     <div style={{ padding: '14px 16px 10px', fontSize: '12px', fontWeight: 700, color: 'var(--c-text-3, #9CA3AF)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
                         👤 Tài khoản
                     </div>
-
-                    {/* User info + logout */}
-                    <div style={{ padding: '10px 16px 12px', display: 'flex', alignItems: 'center', gap: '12px', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
-                        <img src={googleUser.photoURL} alt="avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0, border: `2px solid ${accent}30` }} />
+                    <div style={{ padding: '10px 16px 14px', display: 'flex', alignItems: 'center', gap: '12px', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
+                        <img src={googleUser.photoURL} alt="avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0, border: `2px solid ${accent}40` }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--c-text,#1A1A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{googleUser.displayName}</div>
                             <div style={{ fontSize: '11px', color: 'var(--c-text-3,#9CA3AF)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{googleUser.email}</div>
+                            <div style={{ fontSize: '10px', color: '#10B981', marginTop: '2px' }}>☁️ Dữ liệu tự động đồng bộ</div>
                         </div>
                         <button onClick={() => signOutUser()}
                             style={{ fontSize: '12px', color: '#EF4444', fontWeight: 700, background: 'rgba(239,68,68,0.08)', border: 'none', borderRadius: '8px', cursor: 'pointer', fontFamily: 'inherit', padding: '6px 12px', flexShrink: 0 }}>
                             Đăng xuất
-                        </button>
-                    </div>
-
-                    {/* Sync settings */}
-                    <div style={{ display: 'flex', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
-                        <button
-                            onClick={async () => {
-                                setSyncing(true)
-                                try {
-                                    const data = await loadUserSettings(googleUser.uid)
-                                    if (!data) { Toast.show({ content: 'Chưa có cài đặt trên cloud' }); return }
-                                    if (data.theme) applyTheme(data.theme)
-                                    if (data.glassOpacity != null) {
-                                        setGlassOpacity(data.glassOpacity); saveSetting('glassOpacity', data.glassOpacity); applyGlassOpacity(data.glassOpacity)
-                                    }
-                                    Toast.show({ icon: 'success', content: 'Đã đồng bộ cài đặt!' })
-                                } catch { Toast.show({ icon: 'fail', content: 'Lỗi tải dữ liệu' }) }
-                                finally { setSyncing(false) }
-                            }}
-                            disabled={syncing}
-                            style={{ flex: 1, padding: '12px', border: 'none', background: 'none', fontFamily: 'inherit', fontSize: '13px', fontWeight: 700, color: syncing ? 'var(--c-text-3,#9CA3AF)' : accent, cursor: syncing ? 'not-allowed' : 'pointer', borderRight: '1px solid var(--c-border,rgba(0,0,0,0.05))', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                            ⬇️ Tải cài đặt
-                        </button>
-                        <button
-                            onClick={async () => {
-                                setSyncing(true)
-                                try {
-                                    await saveUserSettings(googleUser.uid, { theme: themeKey, glassOpacity })
-                                    Toast.show({ icon: 'success', content: 'Đã lưu cài đặt!' })
-                                } catch { Toast.show({ icon: 'fail', content: 'Lỗi lưu dữ liệu' }) }
-                                finally { setSyncing(false) }
-                            }}
-                            disabled={syncing}
-                            style={{ flex: 1, padding: '12px', border: 'none', background: 'none', fontFamily: 'inherit', fontSize: '13px', fontWeight: 700, color: syncing ? 'var(--c-text-3,#9CA3AF)' : '#10B981', cursor: syncing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                            ⬆️ Lưu cài đặt
                         </button>
                     </div>
                 </div>

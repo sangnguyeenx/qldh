@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { auth, db } from '../services/firebase'
+import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore'
 
 const uuid = () => Math.random().toString(36).slice(2) + Date.now().toString(36)
 
@@ -81,11 +83,47 @@ export function useStore() {
     const [students, setStudentsRaw] = useState(() => load('students', []))
     const [paymentRounds, setRoundsRaw] = useState(() => load('paymentRounds', []))
     const [payments, setPaymentsRaw] = useState(() => load('payments', []))
+    const [syncing, setSyncing] = useState(false)
+    const debounceRef = useRef(null)
+    const isRemoteLoad = useRef(false)
 
+    // Lưu local
     const setClasses = useCallback(v => { setClassesRaw(v); save('classes', v) }, [])
     const setStudents = useCallback(v => { setStudentsRaw(v); save('students', v) }, [])
     const setRounds = useCallback(v => { setRoundsRaw(v); save('paymentRounds', v) }, [])
     const setPayments = useCallback(v => { setPaymentsRaw(v); save('payments', v) }, [])
+
+    // Auto-sync lên Firestore sau 1.5s mỗi khi data thay đổi
+    useEffect(() => {
+        if (isRemoteLoad.current) { isRemoteLoad.current = false; return }
+        const uid = auth.currentUser?.uid
+        if (!uid) return
+        clearTimeout(debounceRef.current)
+        debounceRef.current = setTimeout(async () => {
+            try {
+                await setDoc(doc(db, 'userData', uid), { classes, students, paymentRounds, payments }, { merge: false })
+            } catch (e) { console.warn('Firestore sync error', e) }
+        }, 1500)
+        return () => clearTimeout(debounceRef.current)
+    }, [classes, students, paymentRounds, payments])
+
+    // Load từ Firestore khi mới mở app
+    useEffect(() => {
+        const uid = auth.currentUser?.uid
+        if (!uid) return
+        setSyncing(true)
+        getDoc(doc(db, 'userData', uid)).then(snap => {
+            if (snap.exists()) {
+                const d = snap.data()
+                isRemoteLoad.current = true
+                if (d.classes) { setClassesRaw(d.classes); save('classes', d.classes) }
+                if (d.students) { setStudentsRaw(d.students); save('students', d.students) }
+                if (d.paymentRounds) { setRoundsRaw(d.paymentRounds); save('paymentRounds', d.paymentRounds) }
+                if (d.payments) { setPaymentsRaw(d.payments); save('payments', d.payments) }
+            }
+        }).catch(e => console.warn('Firestore load error', e))
+            .finally(() => setSyncing(false))
+    }, [])
 
     // ── Classes ────────────────────────────────────────
     const addClass = useCallback((data) => {
