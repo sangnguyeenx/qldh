@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Toast, Popup, Form, Input, Button } from 'antd-mobile'
 import { LockOutline, CheckOutline } from 'antd-mobile-icons'
-import { loadRemoteSettings, saveRemoteSettings } from '../services/githubSync'
+import { signInWithGoogle, signOutUser, onAuthChange, saveUserSettings, loadUserSettings } from '../services/firebase'
 
 const THEMES = [
     {
@@ -59,93 +59,43 @@ function saveSetting(key, val) {
 function ThemePreviewCard({ theme, selected, onSelect }) {
     const p = theme.preview
     const isBgGradient = p.bg.startsWith('linear')
+    const swatchBg = isBgGradient ? p.bg : p.bg
 
     return (
         <button
             onClick={onSelect}
             style={{
-                border: selected ? `2.5px solid ${p.accent}` : '2px solid transparent',
-                borderRadius: '16px',
-                padding: '10px',
-                background: selected ? `${p.accent}12` : '#F9FAFB',
+                border: selected ? `2px solid ${p.accent}` : '2px solid transparent',
+                borderRadius: '12px',
+                padding: '10px 8px',
+                background: selected ? `${p.accent}14` : 'var(--c-bg,#F9FAFB)',
                 cursor: 'pointer',
-                display: 'flex', flexDirection: 'column', gap: '6px',
-                transition: 'all 0.15s', fontFamily: 'inherit',
-                outline: 'none',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '7px',
+                transition: 'all 0.15s', fontFamily: 'inherit', outline: 'none',
+                width: '100%',
             }}
         >
-            {/* Mini app mockup */}
+            {/* Swatch */}
             <div style={{
-                borderRadius: '10px', overflow: 'hidden',
-                background: isBgGradient ? p.bg : p.bg,
-                height: '80px', position: 'relative',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                width: '100%', height: '44px', borderRadius: '8px',
+                background: swatchBg,
+                boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '0 7px', overflow: 'hidden',
             }}>
-                {/* Mini NavBar */}
-                <div style={{
-                    height: '18px',
-                    background: p.nav,
-                    borderBottom: `1px solid ${isBgGradient ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.06)'}`,
-                    display: 'flex', alignItems: 'center', paddingLeft: '6px', gap: '3px',
-                }}>
-                    <div style={{ width: '20px', height: '3px', borderRadius: '2px', background: p.accent }} />
-                </div>
-                {/* Mini content */}
-                <div style={{ padding: '5px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                    <div style={{
-                        background: isBgGradient ? 'rgba(255,255,255,0.25)' : p.card,
-                        borderRadius: '5px', padding: '4px 5px',
-                        border: `1px solid ${isBgGradient ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.06)'}`,
-                        display: 'flex', gap: '3px', alignItems: 'center',
-                    }}>
-                        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: p.accent, flexShrink: 0 }} />
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                            <div style={{ height: '2px', borderRadius: '1px', background: p.text, width: '60%' }} />
-                            <div style={{ height: '2px', borderRadius: '1px', background: p.sub, width: '40%' }} />
-                        </div>
+                <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: p.nav, opacity: 0.9 }} />
+                <div style={{ flex: 1, margin: '0 5px', height: '3px', borderRadius: '2px', background: p.accent }} />
+                {selected
+                    ? <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: p.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <CheckOutline style={{ color: '#fff', fontSize: '9px' }} />
                     </div>
-                    <div style={{
-                        background: isBgGradient ? 'rgba(255,255,255,0.25)' : p.card,
-                        borderRadius: '5px', padding: '4px 5px',
-                        border: `1px solid ${isBgGradient ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.06)'}`,
-                        display: 'flex', gap: '3px', alignItems: 'center',
-                    }}>
-                        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                            <div style={{ height: '2px', borderRadius: '1px', background: p.text, width: '70%' }} />
-                            <div style={{ height: '2px', borderRadius: '1px', background: p.sub, width: '30%' }} />
-                        </div>
-                    </div>
-                </div>
-                {/* Mini TabBar */}
-                <div style={{
-                    position: 'absolute', bottom: 0, left: 0, right: 0,
-                    height: '14px', background: p.nav,
-                    borderTop: `1px solid ${isBgGradient ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.06)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-around',
-                }}>
-                    {[p.accent, p.sub, p.sub, p.sub].map((c, i) => (
-                        <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: c }} />
-                    ))}
-                </div>
+                    : <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: p.nav, opacity: 0.5 }} />
+                }
             </div>
 
             {/* Label */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2px' }}>
-                <div>
-                    <div style={{ fontWeight: 700, fontSize: '12px', color: selected ? p.accent : '#1A1A2E', textAlign: 'left' }}>
-                        {theme.emoji} {theme.label}
-                    </div>
-                    <div style={{ fontSize: '10px', color: '#9CA3AF', textAlign: 'left' }}>{theme.desc}</div>
-                </div>
-                {selected && (
-                    <div style={{
-                        width: '18px', height: '18px', borderRadius: '50%',
-                        background: p.accent, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                        <CheckOutline style={{ color: '#fff', fontSize: '11px' }} />
-                    </div>
-                )}
+            <div style={{ fontSize: '11px', fontWeight: 700, color: selected ? p.accent : 'var(--c-text,#1A1A2E)', textAlign: 'center', lineHeight: 1.2 }}>
+                {theme.emoji} {theme.label}
             </div>
         </button>
     )
@@ -202,11 +152,14 @@ export default function Settings({ onThemeChange }) {
         applyGlassOpacity(saved)
         return saved
     })
-    const [pat, setPat] = useState(() => localStorage.getItem('gh_pat') || '')
-    const [patInput, setPatInput] = useState('')
+    const [googleUser, setGoogleUser] = useState(null)
     const [syncing, setSyncing] = useState(false)
-    const [syncStatus, setSyncStatus] = useState(null) // 'ok' | 'error' | null
-    const [ghSha, setGhSha] = useState(null)
+    const [syncStatus, setSyncStatus] = useState(null)
+
+    useEffect(() => {
+        const unsub = onAuthChange(user => setGoogleUser(user))
+        return unsub
+    }, [])
 
     const currentTheme = THEMES.find(t => t.key === themeKey) || THEMES[0]
 
@@ -550,7 +503,7 @@ export default function Settings({ onThemeChange }) {
                 )}
             </div>
 
-            {/* GitHub Sync */}
+            {/* Google Sync */}
             <div style={{
                 background: 'var(--c-surface, #fff)', margin: '14px 16px 0',
                 borderRadius: '16px', overflow: 'hidden',
@@ -558,86 +511,113 @@ export default function Settings({ onThemeChange }) {
                 border: '1px solid var(--c-border, rgba(0,0,0,0.06))',
             }}>
                 <div style={{ padding: '14px 16px 10px', fontSize: '12px', fontWeight: 700, color: 'var(--c-text-3, #9CA3AF)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                    ☁️ Đồng bộ GitHub
+                    ☁️ Đồng bộ Google
                 </div>
 
-                {/* Trạng thái + repo */}
-                <div style={{ padding: '8px 16px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderTop: '1px solid var(--c-border, rgba(0,0,0,0.05))' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0, background: pat ? (syncStatus === 'error' ? '#EF4444' : '#10B981') : '#9CA3AF' }} />
-                    <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--c-text, #1A1A2E)' }}>
-                            {pat ? 'sangnguyeenx/qldh' : 'Chưa kết nối'}
+                {/* Trạng thái user */}
+                <div style={{ padding: '10px 16px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderTop: '1px solid var(--c-border, rgba(0,0,0,0.05))' }}>
+                    {googleUser ? (
+                        <>
+                            <img src={googleUser.photoURL} alt="avatar" style={{ width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0 }} />
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--c-text,#1A1A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{googleUser.displayName}</div>
+                                <div style={{ fontSize: '11px', color: 'var(--c-text-3,#9CA3AF)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{googleUser.email}</div>
+                            </div>
+                            <button onClick={() => { signOutUser(); setSyncStatus(null) }}
+                                style={{ fontSize: '11px', color: '#EF4444', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
+                                Đăng xuất
+                            </button>
+                        </>
+                    ) : (
+                        <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--c-text-3,#9CA3AF)', marginBottom: '10px' }}>
+                                Đăng nhập để đồng bộ cài đặt giữa các thiết bị
+                            </div>
+                            <button
+                                onClick={async () => {
+                                    try { await signInWithGoogle() }
+                                    catch { Toast.show({ icon: 'fail', content: 'Đăng nhập thất bại!' }) }
+                                }}
+                                style={{
+                                    width: '100%', padding: '11px 16px', borderRadius: '12px',
+                                    border: '1px solid var(--c-border,rgba(0,0,0,0.1))',
+                                    background: '#fff', cursor: 'pointer', fontFamily: 'inherit',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                                    fontSize: '14px', fontWeight: 700, color: '#3C4043',
+                                    boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                                }}
+                            >
+                                <svg width="18" height="18" viewBox="0 0 48 48">
+                                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                                </svg>
+                                Đăng nhập với Google
+                            </button>
                         </div>
-                        <div style={{ fontSize: '11px', color: 'var(--c-text-3, #9CA3AF)', marginTop: '1px' }}>
-                            {pat ? `PAT: ****${pat.slice(-4)} · Mã hoá AES-256` : 'Nhập PAT để bật đồng bộ'}
-                        </div>
-                    </div>
-                    {pat && (
-                        <button onClick={() => { localStorage.removeItem('gh_pat'); setPat(''); setSyncStatus(null) }}
-                            style={{ fontSize: '11px', color: '#EF4444', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
-                            Huỷ kết nối
-                        </button>
                     )}
                 </div>
 
-                {/* PAT input (nếu chưa có) */}
-                {!pat && (
-                    <div style={{ padding: '0 16px 14px', borderTop: '1px solid var(--c-border, rgba(0,0,0,0.05))' }}>
-                        <div style={{ fontSize: '12px', color: 'var(--c-text-3,#9CA3AF)', marginBottom: '8px', marginTop: '10px' }}>
-                            Tạo PAT tại GitHub → Settings → Developer settings → Personal access tokens → Classic → chọn scope <b>repo</b>
-                        </div>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                            <input
-                                type="password"
-                                value={patInput}
-                                onChange={e => setPatInput(e.target.value)}
-                                placeholder="ghp_xxxxxxxxxxxx"
-                                style={{
-                                    flex: 1, padding: '9px 12px', borderRadius: '10px',
-                                    border: '1px solid var(--c-border,rgba(0,0,0,0.1))',
-                                    fontSize: '13px', fontFamily: 'inherit',
-                                    background: 'var(--c-bg,#F9FAFB)', color: 'var(--c-text,#1A1A2E)',
-                                    outline: 'none',
-                                }}
-                            />
-                            <button onClick={handleSavePat} style={{
-                                padding: '9px 16px', borderRadius: '10px', border: 'none',
-                                background: accent, color: '#fff', fontSize: '13px',
-                                fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
-                            }}>Lưu</button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Sync buttons (nếu đã có PAT) */}
-                {pat && (
+                {/* Sync buttons (chỉ hiện khi đã đăng nhập) */}
+                {googleUser && (
                     <div style={{ display: 'flex', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
-                        <button onClick={handleSyncDown} disabled={syncing} style={{
-                            flex: 1, padding: '13px', border: 'none', background: 'none',
-                            fontFamily: 'inherit', fontSize: '13px', fontWeight: 700,
-                            color: syncing ? 'var(--c-text-3,#9CA3AF)' : accent,
-                            cursor: syncing ? 'not-allowed' : 'pointer',
-                            borderRight: '1px solid var(--c-border,rgba(0,0,0,0.05))',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-                        }}>
+                        <button
+                            onClick={async () => {
+                                setSyncing(true); setSyncStatus(null)
+                                try {
+                                    const data = await loadUserSettings(googleUser.uid)
+                                    if (!data) { Toast.show({ content: 'Chưa có dữ liệu trên cloud' }); return }
+                                    if (data.theme) applyTheme(data.theme)
+                                    if (data.glassOpacity != null) {
+                                        setGlassOpacity(data.glassOpacity)
+                                        saveSetting('glassOpacity', data.glassOpacity)
+                                        applyGlassOpacity(data.glassOpacity)
+                                    }
+                                    setSyncStatus('ok')
+                                    Toast.show({ icon: 'success', content: 'Đã tải settings!' })
+                                } catch { setSyncStatus('error'); Toast.show({ icon: 'fail', content: 'Lỗi tải dữ liệu' }) }
+                                finally { setSyncing(false) }
+                            }}
+                            disabled={syncing}
+                            style={{
+                                flex: 1, padding: '13px', border: 'none', background: 'none',
+                                fontFamily: 'inherit', fontSize: '13px', fontWeight: 700,
+                                color: syncing ? 'var(--c-text-3,#9CA3AF)' : accent,
+                                cursor: syncing ? 'not-allowed' : 'pointer',
+                                borderRight: '1px solid var(--c-border,rgba(0,0,0,0.05))',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
+                            }}>
                             {syncing ? '⏳' : '⬇️'} Tải xuống
                         </button>
-                        <button onClick={handleSyncUp} disabled={syncing} style={{
-                            flex: 1, padding: '13px', border: 'none', background: 'none',
-                            fontFamily: 'inherit', fontSize: '13px', fontWeight: 700,
-                            color: syncing ? 'var(--c-text-3,#9CA3AF)' : '#10B981',
-                            cursor: syncing ? 'not-allowed' : 'pointer',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-                        }}>
+                        <button
+                            onClick={async () => {
+                                setSyncing(true); setSyncStatus(null)
+                                try {
+                                    await saveUserSettings(googleUser.uid, { theme: themeKey, glassOpacity })
+                                    setSyncStatus('ok')
+                                    Toast.show({ icon: 'success', content: 'Đã lưu lên cloud!' })
+                                } catch { setSyncStatus('error'); Toast.show({ icon: 'fail', content: 'Lỗi lưu dữ liệu' }) }
+                                finally { setSyncing(false) }
+                            }}
+                            disabled={syncing}
+                            style={{
+                                flex: 1, padding: '13px', border: 'none', background: 'none',
+                                fontFamily: 'inherit', fontSize: '13px', fontWeight: 700,
+                                color: syncing ? 'var(--c-text-3,#9CA3AF)' : '#10B981',
+                                cursor: syncing ? 'not-allowed' : 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
+                            }}>
                             {syncing ? '⏳' : '⬆️'} Lưu lên
                         </button>
                     </div>
                 )}
 
-                <div style={{ padding: '8px 16px 12px', fontSize: '11px', color: 'var(--c-text-3,#9CA3AF)', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
-                    🔐 JSON được mã hoá AES-256-GCM trước khi lưu · PAT chỉ lưu trên máy này
+                <div style={{ padding: '8px 16px 10px', fontSize: '11px', color: 'var(--c-text-3,#9CA3AF)', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
+                    🔐 Dữ liệu lưu riêng theo tài khoản Google · Bảo mật bởi Firebase
                 </div>
             </div>
+
 
             {/* Popup đặt mật khẩu */}
             <Popup visible={showSetPass} onMaskClick={() => { setShowSetPass(false); form.resetFields() }} position="bottom"
