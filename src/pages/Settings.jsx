@@ -503,120 +503,68 @@ export default function Settings({ onThemeChange }) {
                 )}
             </div>
 
-            {/* Google Sync */}
-            <div style={{
-                background: 'var(--c-surface, #fff)', margin: '14px 16px 0',
-                borderRadius: '16px', overflow: 'hidden',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-                border: '1px solid var(--c-border, rgba(0,0,0,0.06))',
-            }}>
-                <div style={{ padding: '14px 16px 10px', fontSize: '12px', fontWeight: 700, color: 'var(--c-text-3, #9CA3AF)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                    ☁️ Đồng bộ Google
-                </div>
+            {/* Tài khoản */}
+            {googleUser && (
+                <div style={{
+                    background: 'var(--c-surface, #fff)', margin: '14px 16px 0',
+                    borderRadius: '16px', overflow: 'hidden',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                    border: '1px solid var(--c-border, rgba(0,0,0,0.06))',
+                }}>
+                    <div style={{ padding: '14px 16px 10px', fontSize: '12px', fontWeight: 700, color: 'var(--c-text-3, #9CA3AF)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                        👤 Tài khoản
+                    </div>
 
-                {/* Trạng thái user */}
-                <div style={{ padding: '10px 16px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderTop: '1px solid var(--c-border, rgba(0,0,0,0.05))' }}>
-                    {googleUser ? (
-                        <>
-                            <img src={googleUser.photoURL} alt="avatar" style={{ width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0 }} />
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--c-text,#1A1A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{googleUser.displayName}</div>
-                                <div style={{ fontSize: '11px', color: 'var(--c-text-3,#9CA3AF)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{googleUser.email}</div>
-                            </div>
-                            <button onClick={() => { signOutUser(); setSyncStatus(null) }}
-                                style={{ fontSize: '11px', color: '#EF4444', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
-                                Đăng xuất
-                            </button>
-                        </>
-                    ) : (
-                        <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--c-text-3,#9CA3AF)', marginBottom: '10px' }}>
-                                Đăng nhập để đồng bộ cài đặt giữa các thiết bị
-                            </div>
-                            <button
-                                onClick={async () => {
-                                    try { await signInWithGoogle() }
-                                    catch { Toast.show({ icon: 'fail', content: 'Đăng nhập thất bại!' }) }
-                                }}
-                                style={{
-                                    width: '100%', padding: '11px 16px', borderRadius: '12px',
-                                    border: '1px solid var(--c-border,rgba(0,0,0,0.1))',
-                                    background: '#fff', cursor: 'pointer', fontFamily: 'inherit',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                                    fontSize: '14px', fontWeight: 700, color: '#3C4043',
-                                    boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                                }}
-                            >
-                                <svg width="18" height="18" viewBox="0 0 48 48">
-                                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-                                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-                                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-                                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-                                </svg>
-                                Đăng nhập với Google
-                            </button>
+                    {/* User info + logout */}
+                    <div style={{ padding: '10px 16px 12px', display: 'flex', alignItems: 'center', gap: '12px', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
+                        <img src={googleUser.photoURL} alt="avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0, border: `2px solid ${accent}30` }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--c-text,#1A1A2E)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{googleUser.displayName}</div>
+                            <div style={{ fontSize: '11px', color: 'var(--c-text-3,#9CA3AF)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{googleUser.email}</div>
                         </div>
-                    )}
-                </div>
+                        <button onClick={() => signOutUser()}
+                            style={{ fontSize: '12px', color: '#EF4444', fontWeight: 700, background: 'rgba(239,68,68,0.08)', border: 'none', borderRadius: '8px', cursor: 'pointer', fontFamily: 'inherit', padding: '6px 12px', flexShrink: 0 }}>
+                            Đăng xuất
+                        </button>
+                    </div>
 
-                {/* Sync buttons (chỉ hiện khi đã đăng nhập) */}
-                {googleUser && (
+                    {/* Sync settings */}
                     <div style={{ display: 'flex', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
                         <button
                             onClick={async () => {
-                                setSyncing(true); setSyncStatus(null)
+                                setSyncing(true)
                                 try {
                                     const data = await loadUserSettings(googleUser.uid)
-                                    if (!data) { Toast.show({ content: 'Chưa có dữ liệu trên cloud' }); return }
+                                    if (!data) { Toast.show({ content: 'Chưa có cài đặt trên cloud' }); return }
                                     if (data.theme) applyTheme(data.theme)
                                     if (data.glassOpacity != null) {
-                                        setGlassOpacity(data.glassOpacity)
-                                        saveSetting('glassOpacity', data.glassOpacity)
-                                        applyGlassOpacity(data.glassOpacity)
+                                        setGlassOpacity(data.glassOpacity); saveSetting('glassOpacity', data.glassOpacity); applyGlassOpacity(data.glassOpacity)
                                     }
-                                    setSyncStatus('ok')
-                                    Toast.show({ icon: 'success', content: 'Đã tải settings!' })
-                                } catch { setSyncStatus('error'); Toast.show({ icon: 'fail', content: 'Lỗi tải dữ liệu' }) }
+                                    Toast.show({ icon: 'success', content: 'Đã đồng bộ cài đặt!' })
+                                } catch { Toast.show({ icon: 'fail', content: 'Lỗi tải dữ liệu' }) }
                                 finally { setSyncing(false) }
                             }}
                             disabled={syncing}
-                            style={{
-                                flex: 1, padding: '13px', border: 'none', background: 'none',
-                                fontFamily: 'inherit', fontSize: '13px', fontWeight: 700,
-                                color: syncing ? 'var(--c-text-3,#9CA3AF)' : accent,
-                                cursor: syncing ? 'not-allowed' : 'pointer',
-                                borderRight: '1px solid var(--c-border,rgba(0,0,0,0.05))',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-                            }}>
-                            {syncing ? '⏳' : '⬇️'} Tải xuống
+                            style={{ flex: 1, padding: '12px', border: 'none', background: 'none', fontFamily: 'inherit', fontSize: '13px', fontWeight: 700, color: syncing ? 'var(--c-text-3,#9CA3AF)' : accent, cursor: syncing ? 'not-allowed' : 'pointer', borderRight: '1px solid var(--c-border,rgba(0,0,0,0.05))', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                            ⬇️ Tải cài đặt
                         </button>
                         <button
                             onClick={async () => {
-                                setSyncing(true); setSyncStatus(null)
+                                setSyncing(true)
                                 try {
                                     await saveUserSettings(googleUser.uid, { theme: themeKey, glassOpacity })
-                                    setSyncStatus('ok')
-                                    Toast.show({ icon: 'success', content: 'Đã lưu lên cloud!' })
-                                } catch { setSyncStatus('error'); Toast.show({ icon: 'fail', content: 'Lỗi lưu dữ liệu' }) }
+                                    Toast.show({ icon: 'success', content: 'Đã lưu cài đặt!' })
+                                } catch { Toast.show({ icon: 'fail', content: 'Lỗi lưu dữ liệu' }) }
                                 finally { setSyncing(false) }
                             }}
                             disabled={syncing}
-                            style={{
-                                flex: 1, padding: '13px', border: 'none', background: 'none',
-                                fontFamily: 'inherit', fontSize: '13px', fontWeight: 700,
-                                color: syncing ? 'var(--c-text-3,#9CA3AF)' : '#10B981',
-                                cursor: syncing ? 'not-allowed' : 'pointer',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-                            }}>
-                            {syncing ? '⏳' : '⬆️'} Lưu lên
+                            style={{ flex: 1, padding: '12px', border: 'none', background: 'none', fontFamily: 'inherit', fontSize: '13px', fontWeight: 700, color: syncing ? 'var(--c-text-3,#9CA3AF)' : '#10B981', cursor: syncing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                            ⬆️ Lưu cài đặt
                         </button>
                     </div>
-                )}
-
-                <div style={{ padding: '8px 16px 10px', fontSize: '11px', color: 'var(--c-text-3,#9CA3AF)', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
-                    🔐 Dữ liệu lưu riêng theo tài khoản Google · Bảo mật bởi Firebase
                 </div>
-            </div>
+            )}
+
 
 
             {/* Popup đặt mật khẩu */}
