@@ -1,0 +1,252 @@
+/* ── Reset ─────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Design tokens ─────────────────────────────────────── */
+:root {
+  /* Neutral palette – warm grays */
+  --c-bg: #F7F7F8;
+  --c-surface: #FFFFFF;
+  --c-border: rgba(0, 0, 0, 0.07);
+  --c-text: #1A1A2E;
+  --c-text-2: #6B7280;
+  --c-text-3: #9CA3AF;
+
+  /* Accent colors – muted, sophisticated */
+  --c-blue: #3B82F6;
+  --c-green: #10B981;
+  --c-amber: #F59E0B;
+  --c-red: #EF4444;
+  --c-purple: #8B5CF6;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  /* Radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+}
+
+html {
+  font-size: 14px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+#root {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--c-bg);
+}
+
+/* ── antd-mobile overrides ──────────────────────────────── */
+
+/* Force font everywhere */
+.adm-tab-bar,
+.adm-nav-bar,
+.adm-button,
+.adm-form,
+.adm-list,
+.adm-popup,
+.adm-selector,
+.adm-input,
+.adm-tabs {
+  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* NavBar */
+.adm-nav-bar {
+  background: rgba(247, 247, 248, 0.92) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--c-border) !important;
+  position: sticky !important;
+  top: 0;
+  z-index: 100;
+  --height: 48px;
+}
+
+.adm-nav-bar-title {
+  font-weight: 700 !important;
+  font-size: 17px !important;
+  letter-spacing: -0.2px !important;
+}
+
+.adm-nav-bar-back-arrow {
+  font-size: 18px !important;
+}
+
+/* Bottom TabBar */
+.adm-tab-bar {
+  position: fixed !important;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--c-border) !important;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.adm-tab-bar-item-title {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+.adm-tab-bar-item-active .adm-tab-bar-item-title {
+  color: var(--c-blue) !important;
+}
+
+.adm-tab-bar-item-active .adm-tab-bar-item-icon {
+  color: var(--c-blue) !important;
+}
+
+.page-content {
+  padding-bottom: 70px;
+}
+
+/* Tabs */
+.adm-tabs-tab {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: var(--c-text-2) !important;
+}
+
+.adm-tabs-tab-active {
+  color: var(--c-text) !important;
+}
+
+.adm-tabs-tab-line {
+  background: var(--c-blue) !important;
+}
+
+.adm-tabs-header {
+  border-bottom: 1px solid var(--c-border) !important;
+  background: #fff;
+}
+
+/* Button */
+.adm-button {
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+  font-weight: 600 !important;
+  border-radius: var(--r-md) !important;
+  letter-spacing: 0 !important;
+}
+
+.adm-button-mini {
+  border-radius: var(--r-sm) !important;
+  font-size: 12px !important;
+}
+
+.adm-button-shape-rounded {
+  border-radius: 100px !important;
+}
+
+/* Form & Input */
+.adm-form-item-label {
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--c-text-2) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.adm-input-element {
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+  font-size: 15px !important;
+  color: var(--c-text) !important;
+}
+
+/* Tag */
+.adm-tag {
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+  font-weight: 600 !important;
+  border-radius: 100px !important;
+}
+
+/* Selector */
+.adm-selector-item {
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+  font-weight: 500 !important;
+  border-radius: var(--r-sm) !important;
+}
+
+/* Popup */
+.adm-popup-body {
+  border-radius: 20px 20px 0 0 !important;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+/* SearchBar */
+.adm-search-bar-input-box {
+  border-radius: var(--r-md) !important;
+  background: var(--c-surface) !important;
+  border: 1px solid var(--c-border) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.adm-search-bar-input-box input {
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+  font-size: 14px !important;
+}
+
+/* Progress bar */
+.adm-progress-bar-trail {
+  border-radius: 6px !important;
+}
+
+.adm-progress-bar-fill {
+  border-radius: 6px !important;
+}
+
+/* Toast */
+.adm-toast-main {
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+  border-radius: var(--r-md) !important;
+}
+
+/* ── Shared card ────────────────────────────────────────── */
+.card {
+  background: var(--c-surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--c-border);
+  overflow: hidden;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--c-text-3);
+  padding: 0 20px;
+  margin-bottom: 8px;
+}
+
+/* ── Scroll ─────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
