@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Toast, Popup, Form, Input, Button } from 'antd-mobile'
 import { LockOutline, CheckOutline } from 'antd-mobile-icons'
+import { loadRemoteSettings, saveRemoteSettings } from '../services/githubSync'
 
 const THEMES = [
     {
@@ -201,6 +202,11 @@ export default function Settings({ onThemeChange }) {
         applyGlassOpacity(saved)
         return saved
     })
+    const [pat, setPat] = useState(() => localStorage.getItem('gh_pat') || '')
+    const [patInput, setPatInput] = useState('')
+    const [syncing, setSyncing] = useState(false)
+    const [syncStatus, setSyncStatus] = useState(null) // 'ok' | 'error' | null
+    const [ghSha, setGhSha] = useState(null)
 
     const currentTheme = THEMES.find(t => t.key === themeKey) || THEMES[0]
 
@@ -270,6 +276,57 @@ export default function Settings({ onThemeChange }) {
         saveSetting('password', null)
         setHasPassword(false)
         Toast.show({ icon: 'success', content: 'Đã bỏ mật khẩu!' })
+    }
+
+    const getSettingsObj = () => ({
+        theme: themeKey,
+        glassOpacity,
+        wallpaperUrl: loadSetting('wallpaperUrl', null),
+    })
+
+    const handleSavePat = () => {
+        const t = patInput.trim()
+        if (!t) return
+        localStorage.setItem('gh_pat', t)
+        setPat(t)
+        setPatInput('')
+        Toast.show({ icon: 'success', content: 'Đã lưu PAT!' })
+    }
+
+    const handleSyncUp = async () => {
+        if (!pat) { Toast.show({ icon: 'fail', content: 'Chưa có PAT!' }); return }
+        setSyncing(true); setSyncStatus(null)
+        try {
+            const newSha = await saveRemoteSettings(pat, getSettingsObj(), ghSha)
+            setGhSha(newSha)
+            setSyncStatus('ok')
+            Toast.show({ icon: 'success', content: 'Đã lưu lên GitHub!' })
+        } catch (e) {
+            setSyncStatus('error')
+            Toast.show({ icon: 'fail', content: e.message || 'Lỗi kết nối GitHub' })
+        } finally { setSyncing(false) }
+    }
+
+    const handleSyncDown = async () => {
+        if (!pat) { Toast.show({ icon: 'fail', content: 'Chưa có PAT!' }); return }
+        setSyncing(true); setSyncStatus(null)
+        try {
+            const result = await loadRemoteSettings(pat)
+            if (!result) { Toast.show({ content: 'Chưa có dữ liệu trên GitHub' }); return }
+            const { settings, sha } = result
+            setGhSha(sha)
+            if (settings.theme) applyTheme(settings.theme)
+            if (settings.glassOpacity != null) {
+                setGlassOpacity(settings.glassOpacity)
+                saveSetting('glassOpacity', settings.glassOpacity)
+                applyGlassOpacity(settings.glassOpacity)
+            }
+            setSyncStatus('ok')
+            Toast.show({ icon: 'success', content: 'Đã tải settings từ GitHub!' })
+        } catch (e) {
+            setSyncStatus('error')
+            Toast.show({ icon: 'fail', content: 'Sai PAT hoặc lỗi kết nối' })
+        } finally { setSyncing(false) }
     }
 
     const accent = currentTheme.preview.accent
@@ -491,6 +548,95 @@ export default function Settings({ onThemeChange }) {
                         </button>
                     </>
                 )}
+            </div>
+
+            {/* GitHub Sync */}
+            <div style={{
+                background: 'var(--c-surface, #fff)', margin: '14px 16px 0',
+                borderRadius: '16px', overflow: 'hidden',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                border: '1px solid var(--c-border, rgba(0,0,0,0.06))',
+            }}>
+                <div style={{ padding: '14px 16px 10px', fontSize: '12px', fontWeight: 700, color: 'var(--c-text-3, #9CA3AF)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                    ☁️ Đồng bộ GitHub
+                </div>
+
+                {/* Trạng thái + repo */}
+                <div style={{ padding: '8px 16px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderTop: '1px solid var(--c-border, rgba(0,0,0,0.05))' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0, background: pat ? (syncStatus === 'error' ? '#EF4444' : '#10B981') : '#9CA3AF' }} />
+                    <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--c-text, #1A1A2E)' }}>
+                            {pat ? 'sangnguyeenx/qldh' : 'Chưa kết nối'}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--c-text-3, #9CA3AF)', marginTop: '1px' }}>
+                            {pat ? `PAT: ****${pat.slice(-4)} · Mã hoá AES-256` : 'Nhập PAT để bật đồng bộ'}
+                        </div>
+                    </div>
+                    {pat && (
+                        <button onClick={() => { localStorage.removeItem('gh_pat'); setPat(''); setSyncStatus(null) }}
+                            style={{ fontSize: '11px', color: '#EF4444', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                            Huỷ kết nối
+                        </button>
+                    )}
+                </div>
+
+                {/* PAT input (nếu chưa có) */}
+                {!pat && (
+                    <div style={{ padding: '0 16px 14px', borderTop: '1px solid var(--c-border, rgba(0,0,0,0.05))' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--c-text-3,#9CA3AF)', marginBottom: '8px', marginTop: '10px' }}>
+                            Tạo PAT tại GitHub → Settings → Developer settings → Personal access tokens → Classic → chọn scope <b>repo</b>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <input
+                                type="password"
+                                value={patInput}
+                                onChange={e => setPatInput(e.target.value)}
+                                placeholder="ghp_xxxxxxxxxxxx"
+                                style={{
+                                    flex: 1, padding: '9px 12px', borderRadius: '10px',
+                                    border: '1px solid var(--c-border,rgba(0,0,0,0.1))',
+                                    fontSize: '13px', fontFamily: 'inherit',
+                                    background: 'var(--c-bg,#F9FAFB)', color: 'var(--c-text,#1A1A2E)',
+                                    outline: 'none',
+                                }}
+                            />
+                            <button onClick={handleSavePat} style={{
+                                padding: '9px 16px', borderRadius: '10px', border: 'none',
+                                background: accent, color: '#fff', fontSize: '13px',
+                                fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
+                            }}>Lưu</button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Sync buttons (nếu đã có PAT) */}
+                {pat && (
+                    <div style={{ display: 'flex', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
+                        <button onClick={handleSyncDown} disabled={syncing} style={{
+                            flex: 1, padding: '13px', border: 'none', background: 'none',
+                            fontFamily: 'inherit', fontSize: '13px', fontWeight: 700,
+                            color: syncing ? 'var(--c-text-3,#9CA3AF)' : accent,
+                            cursor: syncing ? 'not-allowed' : 'pointer',
+                            borderRight: '1px solid var(--c-border,rgba(0,0,0,0.05))',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
+                        }}>
+                            {syncing ? '⏳' : '⬇️'} Tải xuống
+                        </button>
+                        <button onClick={handleSyncUp} disabled={syncing} style={{
+                            flex: 1, padding: '13px', border: 'none', background: 'none',
+                            fontFamily: 'inherit', fontSize: '13px', fontWeight: 700,
+                            color: syncing ? 'var(--c-text-3,#9CA3AF)' : '#10B981',
+                            cursor: syncing ? 'not-allowed' : 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
+                        }}>
+                            {syncing ? '⏳' : '⬆️'} Lưu lên
+                        </button>
+                    </div>
+                )}
+
+                <div style={{ padding: '8px 16px 12px', fontSize: '11px', color: 'var(--c-text-3,#9CA3AF)', borderTop: '1px solid var(--c-border,rgba(0,0,0,0.05))' }}>
+                    🔐 JSON được mã hoá AES-256-GCM trước khi lưu · PAT chỉ lưu trên máy này
+                </div>
             </div>
 
             {/* Popup đặt mật khẩu */}
