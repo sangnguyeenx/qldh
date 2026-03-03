@@ -184,14 +184,7 @@ export default function RoundDetail({ store, navigate, params }) {
                         }}
                     >{l}</button>
                 ))}
-                {stats.unpaid > 0 && (
-                    <button
-                        onClick={markAllPaid}
-                        style={{ marginLeft: 'auto', padding: '5px 12px', borderRadius: '100px', border: 'none', cursor: 'pointer', background: '#10B981', color: '#fff', fontSize: '12px', fontWeight: 700, fontFamily: 'inherit', boxShadow: '0 2px 6px rgba(16,185,129,0.3)' }}
-                    >
-                        ✓ Thu tất cả
-                    </button>
-                )}
+
             </div>
 
             {/* Student list */}
