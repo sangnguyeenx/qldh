@@ -121,13 +121,16 @@ export default function App() {
       document.documentElement.style.setProperty('--body-bg-image', `url(${wallpaper})`)
       document.documentElement.style.setProperty('--body-bg-size', 'cover')
       document.documentElement.style.setProperty('--body-bg-pos', 'center')
-      const root = document.getElementById('root')
-      if (root) {
-        root.style.backgroundImage = `url(${wallpaper})`
-        root.style.backgroundSize = 'cover'
-        root.style.backgroundPosition = 'center'
-        root.style.backgroundAttachment = 'fixed'
-      }
+      // Tạo fixed background div
+      const bgEl = document.createElement('div')
+      bgEl.id = 'wallpaper-fixed-bg'
+      bgEl.style.cssText = [
+        'position:fixed', 'top:0', 'left:0', 'right:0', 'bottom:0',
+        'z-index:-1', `background-image:url(${wallpaper})`,
+        'background-size:cover', 'background-position:center',
+        'background-repeat:no-repeat', 'pointer-events:none',
+      ].join(';')
+      document.body.insertBefore(bgEl, document.body.firstChild)
     }
     return saved
   })

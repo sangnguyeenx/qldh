@@ -151,29 +151,36 @@ function ThemePreviewCard({ theme, selected, onSelect }) {
 }
 
 function applyWallpaper(base64) {
-    const root = document.getElementById('root')
+    const BG_ID = 'wallpaper-fixed-bg'
+    let bgEl = document.getElementById(BG_ID)
+
     if (base64) {
-        // Set CSS variable on <html> — overrides even [data-theme] CSS rules
+        // Tạo div fixed đứng sau tất cả — hoạt động trên mọi thiết bị kể cả iOS
+        if (!bgEl) {
+            bgEl = document.createElement('div')
+            bgEl.id = BG_ID
+            bgEl.style.cssText = [
+                'position:fixed', 'top:0', 'left:0', 'right:0', 'bottom:0',
+                'z-index:-1', 'background-size:cover', 'background-position:center',
+                'background-repeat:no-repeat', 'pointer-events:none',
+            ].join(';')
+            document.body.insertBefore(bgEl, document.body.firstChild)
+        }
+        bgEl.style.backgroundImage = `url(${base64})`
+        // CSS variable cho glass theme
         document.documentElement.style.setProperty('--body-bg-image', `url(${base64})`)
         document.documentElement.style.setProperty('--body-bg-size', 'cover')
         document.documentElement.style.setProperty('--body-bg-pos', 'center')
-        // Also set inline for non-glass themes
-        if (root) {
-            root.style.backgroundImage = `url(${base64})`
-            root.style.backgroundSize = 'cover'
-            root.style.backgroundPosition = 'center'
-            root.style.backgroundAttachment = 'fixed'
-        }
+        // Xóa background trên #root để div fixed hiện ra
+        const root = document.getElementById('root')
+        if (root) { root.style.background = 'none'; root.style.backgroundImage = '' }
     } else {
+        if (bgEl) bgEl.remove()
         document.documentElement.style.removeProperty('--body-bg-image')
         document.documentElement.style.removeProperty('--body-bg-size')
         document.documentElement.style.removeProperty('--body-bg-pos')
-        if (root) {
-            root.style.backgroundImage = ''
-            root.style.backgroundSize = ''
-            root.style.backgroundPosition = ''
-            root.style.backgroundAttachment = ''
-        }
+        const root = document.getElementById('root')
+        if (root) { root.style.background = ''; root.style.backgroundImage = '' }
     }
 }
 
